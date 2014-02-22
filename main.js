@@ -17,7 +17,6 @@ restServer.use(
 	}
 );
 
-
 /* rest function */
 var eventList = [{
     title: "FxOSコードリーディングミートアップ #5",
@@ -62,25 +61,8 @@ var getUsers = function(req,res,next){
 	res.send(JSON.stringify(menberList));
 }
 
-var rPost = function(req,res,next){
-	res.send(201,"post action!");
-	return next();
-}
-var rSend = function(req,res,next){
-	console.log('/get', req.params.XxxX);
-	var param = req.params.XxxX;
-	try{
-		res.send(JSON.stringify({ p : param }));
-	}catch(e){ 
-		console.log('err:',e);
-		res.send(JSON.stringify({err:"505 server error!"}));
-	}
-	//return next();
-}
-
 restServer.get('/events', getEvents);
 restServer.get('/users', getUsers);
-
 
 /* rest URI */
 restServer.put('/get', rSend);
