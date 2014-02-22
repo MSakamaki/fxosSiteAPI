@@ -6,7 +6,6 @@
 		"start": "node main.js"
   },
   "dependencies": {
-		"restify" : "*",
-    "mongoose" : "3.8.7"
+		"restify" : "*"
   }
 }

@@ -1,7 +1,6 @@
 
 /* server define */
-var mongoose = require('mongoose'),
-    restServer = require('restify').createServer();
+var restServer = require('restify').createServer();
 restServer.listen(3001, function() {
 	console.log('listening at ', restServer.name, restServer.url);
 });
@@ -20,18 +19,19 @@ restServer.use(
 
 
 /* rest function */
-var eventlist = [{
-	name: "FxOSミートアップ #4",
-	date: "yyyy-mm-dd",
-	ditail: "説明 4"
-},{
-	name: "FxOSミートアップ #5",
-	date: "yyyy-mm-dd",
-	ditail: "説明 5"
-},{
-	name: "FxOSミートアップ #6",
-	date: "yyyy-mm-dd",
-	ditail: "説明 6"
+var eventList = [
+{ 
+    title: "関東Firefox OS勉強会 3rd ごった煮",
+    dateFrom: "2014/02/01 19:00",
+    dateTo: "2014/02/01 20:00",
+    url: "http://www.zusaar.com/event/924003",
+    description: "関東FirefoxOS勉強会の3回目です。 まだまだ登壇者募集中です！ 会場 シナジーカフェ GMO Yours 東京都渋谷区桜丘町26番1号　セルリアンタワー 11階 参加費 無料 入場方法 セルリアンタワーのロビー（エスカレーターを上ったところ）で受付"
+},{ 
+    title: "関西Firefox OS勉強会 1st",
+    dateFrom: "2014/02/01 19:00",
+    dateTo: "2014/02/01 20:00",
+    url: "http://atnd.org/events/39457",
+    description: "遂に開発機が発売されたFirefox OSについての勉強会です。技術的な内容はもちろんのこと、Keon、PeakやFirefox OSをインストールしたNexus Sを実際に触ってみたり、そこから感じられるFirefox OS、スマートフォンの未来を話せたらと思います。"
 }];
 
 var menberList =[{
@@ -43,14 +43,11 @@ var menberList =[{
 }];
 
 var getEvents = function(req,res,next){
-	res.send(JSON.stringify(eventlist));
+    res.send(JSON.stringify(eventList));
 }
 var getUsers = function(req,res,next){
 	res.send(JSON.stringify(menberList));
 }
-
-
-
 
 var rPost = function(req,res,next){
 	res.send(201,"post action!");
@@ -80,76 +77,3 @@ restServer.del('/get/:XxxX', rSend);
 restServer.post('/hello', rPost);
 
 
-/*************************** mongo DB ***************************/
-var db = mongoose.connect('mongodb://localhost/readfxos');
-
-var fxosSite = new mongoose.Schema({ key: String, value: String });
-var fxosEvent = db.model('fxosEvent', fxosSite);
-
-
-var dbUpd = function(address, keyg){
-    fncSect(address, function(){
-        console.log('update', address, keyg);
-        model.update(
-            {"address": address},
-            {$set : {keyg : keyg }},
-            { upsert : false , multi : false},
-            function(err){ 
-                if(err){ console.log('heUpd err:',err);}
-            }
-        );
-    }, function() {
-        console.log('insert', address, keyg);
-        var mdl = new model();
-        mdl.address=address;
-        mdl.keyg=keyg;
-        mdl.save(function(err){ if(err){ console.log('err', err);} });
-    });
-}
-var fncSect = function(address, updfnc, insfnc){
-    console.log('fncSect');
-    model.find({"address": address}, function(err,item){
-        console.log('fncSect-001',err,item);
-        if(err || item===null){return;}
-        if(item.length){
-            updfnc();
-        }else{
-            insfnc();
-        }
-        show();
-    });
-}
-
-/* db base */
-var shows = function(){
-    model.find({}, function(err, item){
-        item.forEach(function(lst){
-            console.log('address:',lst.address, 'keyg:', lst.keyg, 'JSON:', lst);
-        });
-    });
-}
-var getGdata=function(fnc){
-    model.find({}, function(err, item){
-        fnc(item);
-    });
-}
-var deleteAllGdata=function(){
-    model.remove({}, function(err){
-        console.log('err:', err);
-    });
-}
-
-/* utill*/
-var keygen = function(n, b) {
-    b = b || '';
-    var a = 'abcdefghijklmnopqrstuvwxyz'
-        + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        + '0123456789'
-        + b;
-    a = a.split('');
-    var s = '';
-    for (var i = 0; i < n; i++) {
-        s += a[Math.floor(Math.random() * a.length)];
-    }
-    return s;
-};
