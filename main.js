@@ -1,11 +1,14 @@
 
 /* server define */
+var https = require('https');
+var main_env = require('./.env');
 var restServer = require('restify').createServer();
 restServer.listen(3001, function() {
 	console.log('listening at ', restServer.name, restServer.url);
 });
 
-
+/* settings */
+var gcal_api = 'https://www.googleapis.com/calendar/v3/calendars/'+main_env.gcal_url+'/events?key=' + main_env.gcal_key;
 
 /************************  REST Server *******************************/
 restServer.use(
@@ -46,29 +49,35 @@ var eventList = [{
     description: "早くも四回目になりました\n\nFirefox OSはギークにリーチする端末にすると発表されて俄然ガジェオタ的に盛り上がってきましたよね！\n日本での発売は楽しみですがそれを待つまでもなくFxOSは触れます。今日もどこかでガジェット好きのみんながFxOSを触ってます。この機にちょっと中身も見てみませんか？"
 }];
 
-var menberList =[{
-	name: " User Name"
-},{
-	name: " User Name"
-},{
-	name: " User Name"
-}];
-
 var getEvents = function(req,res,next){
     res.send(JSON.stringify(eventList));
 }
-var getUsers = function(req,res,next){
-	res.send(JSON.stringify(menberList));
+
+var getGcalEvents = function(req,res,next){
+    console.log(gcal_api);
+    // 
+  try{
+    https.get(gcal_api, function(gcal_res) {
+    var data='';
+    console.log("statusCode: ", gcal_res.statusCode);
+    gcal_res.on('data', function (chunk){
+        var decoded_data = chunk.toString('utf8');
+        data += decoded_data;
+    });
+
+    gcal_res.on('end',function(){
+        console.log("end");
+        try{
+            res.send(JSON.parse(data));
+        }catch(e){console.log(e);}
+    });
+
+    }).on('error', function(e) {
+      console.log("Got error: ", e.message);
+    });
+  }catch(e){console.log(e);}
 }
 
+
 restServer.get('/events', getEvents);
-restServer.get('/users', getUsers);
-
-/* rest URI */
-restServer.put('/get', rSend);
-restServer.get('/get/:XxxX', rSend);
-restServer.head('/get/:XxxX',rSend);
-restServer.del('/get/:XxxX', rSend);
-restServer.post('/hello', rPost);
-
-
+restServer.get('/events/gcal', getGcalEvents);

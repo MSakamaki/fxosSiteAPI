@@ -6,6 +6,7 @@
 		"start": "node main.js"
   },
   "dependencies": {
-		"restify" : "*"
+		"restify" : "*",
+    "googleapis": "~0.6.1"
   }
 }
